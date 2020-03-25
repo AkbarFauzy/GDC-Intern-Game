@@ -25,7 +25,7 @@ public class CameraMovement : MonoBehaviour
         Vector3 centerpoint = getCenterPoint();
         Vector3 newPosition = centerpoint + offset;
 
-        //newPosition.z = newPosition.z * (GetDistance()+1);
+        newPosition.z = newPosition.z * ((GetDistance()/200F)+1);
 
         transform.position = newPosition;
 

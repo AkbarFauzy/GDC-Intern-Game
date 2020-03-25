@@ -118,6 +118,7 @@ MonoBehaviour:
   speed: 0
   tapKey: 97
   player: {fileID: 0}
+  playerOffset: {x: 0, y: 0, z: 0}
 --- !u!54 &-4544415783400123344
 Rigidbody:
   m_ObjectHideFlags: 0
