@@ -6,18 +6,35 @@ public class GachaScript : MonoBehaviour
 {
     public List<SpriteRenderer> light;
     public List<GameObject> playerQueue;
+    public List<Animator> chest;
+
+    [System.Serializable]
+    struct ChestLoot {
+        public int chestNum;
+        public int buff;
+    }
+
+    private ChestLoot[] loot = new ChestLoot[6]; 
 
     private bool isInvoke;
+    private int i;
 
     private void Start()
     {
-
+        for (int i = 0; i<chest.Count; i++) {
+            chest[i].SetBool("isOpen", false);
+            loot[i].chestNum = i;
+            int temRand = Random.Range(0, 10);
+            loot[i].buff = temRand;
+            GenerateChestLoot();
+        }
     }
 
     private void Update()
     {
         if (Input.GetKeyDown("a"))
         {
+            chest[i].SetBool("isOpen", true);
             isInvoke = true;
         }
         if (Input.GetKeyDown("s"))
@@ -31,8 +48,33 @@ public class GachaScript : MonoBehaviour
 
     }
 
+    void GenerateChestLoot()
+    {
+       /* if () {
+
+        } else if () {
+
+        } else if () {
+
+        } else if () {
+
+        } else if () { 
+        
+        } else if () { 
+        
+        } else if () {
+
+        } else if () {
+
+        } else if () {
+
+        }
+        */
+
+    }
+
     IEnumerator PlayRandomLight() {
-        int i;
+   
         while (!isInvoke)
         {
             for (int j = 0; j < light.Count; j++)
