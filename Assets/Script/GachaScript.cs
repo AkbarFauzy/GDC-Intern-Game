@@ -5,9 +5,11 @@ using UnityEngine;
 public class GachaScript : MonoBehaviour
 {
     public List<SpriteRenderer> light;
+    public List<Animator> buffAnimation;
     public List<GameObject> playerQueue;
     public List<Animator> chest;
 
+    private List<int> noRepeat = new List<int>();
     [System.Serializable]
     struct ChestLoot {
         public int chestNum;
@@ -18,24 +20,31 @@ public class GachaScript : MonoBehaviour
 
     private bool isInvoke;
     private int i;
+    private int repeatable = 0;
 
     private void Start()
     {
+            noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1 };
+
         for (int i = 0; i<chest.Count; i++) {
             chest[i].SetBool("isOpen", false);
             loot[i].chestNum = i;
-            int temRand = Random.Range(0, 10);
+            int temRand = Random.Range(1,4);
             loot[i].buff = temRand;
-            GenerateChestLoot();
+            GenerateChestLoot(temRand, i);
         }
     }
 
     private void Update()
     {
+
         if (Input.GetKeyDown("a"))
         {
             chest[i].SetBool("isOpen", true);
+            noRepeat[repeatable] = i;
+            repeatable++;
             isInvoke = true;
+            StartCoroutine(DelayedAnimation());
         }
         if (Input.GetKeyDown("s"))
         {
@@ -48,11 +57,19 @@ public class GachaScript : MonoBehaviour
 
     }
 
-    void GenerateChestLoot()
+    IEnumerator DelayedAnimation()
     {
-       /* if () {
+        yield return new WaitForSeconds(1);
+        buffAnimation[i].SetInteger("status", loot[i].buff);
+    }
 
-        } else if () {
+    void GenerateChestLoot(int lootNumber, int chestIndex)
+    {
+        if (lootNumber == 1)
+        {
+           // buffAnimation[chestIndex].runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("item");
+        }
+        /*else if () {
 
         } else if () {
 
@@ -82,7 +99,10 @@ public class GachaScript : MonoBehaviour
                 light[j].color = Color.black;
             }
             i = Random.Range(0, 6);
-
+            while (noRepeat.Contains(i))
+            {
+                i = Random.Range(0, 6);
+            }
             light[i].color = Color.white;
 
             yield return null;
