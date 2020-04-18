@@ -24,7 +24,7 @@ public class GachaScript : MonoBehaviour
 
     private void Start()
     {
-            noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1 };
+        noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1 };
 
         for (int i = 0; i<chest.Count; i++) {
             chest[i].SetBool("isOpen", false);
@@ -37,24 +37,12 @@ public class GachaScript : MonoBehaviour
 
     private void Update()
     {
-
-        if (Input.GetKeyDown("a"))
-        {
-            chest[i].SetBool("isOpen", true);
-            noRepeat[repeatable] = i;
-            repeatable++;
-            isInvoke = true;
-            StartCoroutine(DelayedAnimation());
-        }
-        if (Input.GetKeyDown("s"))
-        {
-            isInvoke = false;
-        }
         if (!isInvoke)
         {
             StartCoroutine(PlayRandomLight());
         }
-
+        Debug.LogWarning("test");
+        
     }
 
     IEnumerator DelayedAnimation()
@@ -92,7 +80,7 @@ public class GachaScript : MonoBehaviour
 
     IEnumerator PlayRandomLight() {
    
-        while (!isInvoke)
+        while (!isInvoke && GameManager.Instance.countFinish != 4)
         {
             for (int j = 0; j < light.Count; j++)
             {
@@ -104,6 +92,18 @@ public class GachaScript : MonoBehaviour
                 i = Random.Range(0, 6);
             }
             light[i].color = Color.white;
+           
+            if (Input.GetKeyDown(GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].tapKey))
+            {
+                chest[i].SetBool("isOpen", true);
+                noRepeat[repeatable] = i;
+                repeatable++;
+                isInvoke = true;
+                StartCoroutine(DelayedAnimation());
+                yield return new WaitForSeconds(4);
+                isInvoke = false;
+                GameManager.Instance.countFinish++;
+            }
 
             yield return null;
         }

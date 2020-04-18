@@ -7,23 +7,13 @@ public class PositionScript : MonoBehaviour
     public Transform finishLine;
     public List<Transform> target;
     public List<SpriteRenderer> playerBoard;
-    
-    [System.Serializable]
-    struct rank {
-        public int playerNumber;
-        public int pos;
-        public float score;
-        public float distanceToFinish;
-    }
-
-    private rank[] playerRank = new rank[4];
 
     private void Start()
     {
         for (int i = 0;i<target.Count;i++) {
-            playerRank[i].playerNumber = i+1;
-            playerRank[i].pos = 1;
-            playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
+            GameManager.Instance.playerRank[i].playerNumber = i+1;
+            GameManager.Instance.playerRank[i].pos = 1;
+            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
         }
 
     }
@@ -37,7 +27,7 @@ public class PositionScript : MonoBehaviour
     void DistanceToFinish() {
         for (int i = 0; i < target.Count; i++)
         {
-            playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
+            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
         }
     }
 
@@ -48,11 +38,11 @@ public class PositionScript : MonoBehaviour
             int j = 0;
             while (j < target.Count)
             {
-                if (playerRank[j].distanceToFinish <= playerRank[i].distanceToFinish)
+                if (GameManager.Instance.playerRank[j].distanceToFinish <= GameManager.Instance.playerRank[i].distanceToFinish)
                     pos++;
                 j++;
             }
-            playerRank[i].pos = pos;
+            GameManager.Instance.playerRank[i].pos = pos;
             ChangePos(pos, i);
         }
     }
@@ -68,7 +58,5 @@ public class PositionScript : MonoBehaviour
             playerBoard[player].color = Color.blue;
         }
     }
-
-    
 
 }
