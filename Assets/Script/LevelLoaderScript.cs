@@ -23,6 +23,7 @@ public class LevelLoaderScript : MonoBehaviour
             GameManager.Instance.runningStageRound++;
         } else if (GameManager.Instance.runningStageRound == 2) {
             StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
+            GameManager.Instance.runningStageRound++;
         }
         else {
             GameManager.Instance.runningStageRound = 0;

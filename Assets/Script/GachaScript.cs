@@ -6,14 +6,15 @@ public class GachaScript : MonoBehaviour
 {
     public List<SpriteRenderer> light;
     public List<Animator> buffAnimation;
-    public List<GameObject> playerQueue;
     public List<Animator> chest;
 
     private List<int> noRepeat = new List<int>();
     [System.Serializable]
     struct ChestLoot {
         public int chestNum;
-        public int buff;
+        public int effect;
+        public string effctType;
+        public float effectValue;
     }
 
     private ChestLoot[] loot = new ChestLoot[6]; 
@@ -26,11 +27,11 @@ public class GachaScript : MonoBehaviour
     {
         noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1 };
 
-        for (int i = 0; i<chest.Count; i++) {
+        for (i = 0; i<chest.Count; i++) {
             chest[i].SetBool("isOpen", false);
             loot[i].chestNum = i;
             int temRand = Random.Range(1,4);
-            loot[i].buff = temRand;
+            loot[i].effect= temRand;
             GenerateChestLoot(temRand, i);
         }
     }
@@ -48,33 +49,23 @@ public class GachaScript : MonoBehaviour
     IEnumerator DelayedAnimation()
     {
         yield return new WaitForSeconds(1);
-        buffAnimation[i].SetInteger("status", loot[i].buff);
+        buffAnimation[i].SetInteger("status", loot[i].effect);
     }
 
     void GenerateChestLoot(int lootNumber, int chestIndex)
     {
-        if (lootNumber == 1)
+       /* if (lootNumber%2 ==0)
         {
-           // buffAnimation[chestIndex].runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("item");
+            if () { 
+            
+            }
         }
-        /*else if () {
-
-        } else if () {
-
-        } else if () {
-
-        } else if () { 
+        else {
+            if () { 
+            
+            }
+        }*/
         
-        } else if () { 
-        
-        } else if () {
-
-        } else if () {
-
-        } else if () {
-
-        }
-        */
 
     }
 

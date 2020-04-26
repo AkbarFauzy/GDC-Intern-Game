@@ -30,7 +30,7 @@ public class CountdownScript : MonoBehaviour
         GameManager.Instance.BeginGame();
 
         yield return new WaitForSeconds(1f);
-        DestroyObject(countDownText);
+        Object.Destroy(countDownText);
 
     }
 }
