@@ -13,7 +13,7 @@ public class GachaScript : MonoBehaviour
     struct ChestLoot {
         public int chestNum;
         public int effect;
-        public string effctType;
+        public string effectType;
         public float effectValue;
     }
 
@@ -25,12 +25,12 @@ public class GachaScript : MonoBehaviour
 
     private void Start()
     {
-        noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1 };
+        noRepeat = new List<int>() {-1,-1,-1,-1,-1,-1};
 
         for (i = 0; i<chest.Count; i++) {
             chest[i].SetBool("isOpen", false);
             loot[i].chestNum = i;
-            int temRand = Random.Range(1,4);
+            int temRand = Random.Range(1,5);
             loot[i].effect= temRand;
             GenerateChestLoot(temRand, i);
         }
@@ -42,8 +42,6 @@ public class GachaScript : MonoBehaviour
         {
             StartCoroutine(PlayRandomLight());
         }
-        Debug.LogWarning("test");
-        
     }
 
     IEnumerator DelayedAnimation()
@@ -54,19 +52,23 @@ public class GachaScript : MonoBehaviour
 
     void GenerateChestLoot(int lootNumber, int chestIndex)
     {
-       /* if (lootNumber%2 ==0)
+       if (lootNumber%2 ==0) //buff
         {
-            if () { 
-            
+            if (lootNumber == 2) {
+                loot[chestIndex].effectType = "speed";
             }
+            else if (lootNumber == 4)
+            {
+                loot[chestIndex].effectType = "damage";
+            }
+            loot[chestIndex].effectValue = (float)System.Math.Round(Random.Range(2.0f, 4.0f),2);
         }
-        else {
-            if () { 
-            
+        else { //debuff
+            if (lootNumber == 1 || lootNumber == 3) {
+                loot[chestIndex].effectType = "speed";
             }
-        }*/
-        
-
+            loot[chestIndex].effectValue = Random.Range(0.2f, 0.7f);
+        }
     }
 
     IEnumerator PlayRandomLight() {
@@ -88,12 +90,14 @@ public class GachaScript : MonoBehaviour
             {
                 chest[i].SetBool("isOpen", true);
                 noRepeat[repeatable] = i;
-                repeatable++;
                 isInvoke = true;
                 StartCoroutine(DelayedAnimation());
                 yield return new WaitForSeconds(4);
                 isInvoke = false;
+                GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].bufftype = loot[i].effectType;
+                GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].buffValue = loot[i].effectValue;
                 GameManager.Instance.countFinish++;
+                repeatable++;
             }
 
             yield return null;

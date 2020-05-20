@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BoardScript : MonoBehaviour
 {
@@ -11,4 +12,5 @@ public class BoardScript : MonoBehaviour
     {
         transform.position = cam.transform.position + offset;
     }
+
 }

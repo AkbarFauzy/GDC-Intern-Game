@@ -6,16 +6,17 @@ using UnityEngine.UI;
 public class CountdownScript : MonoBehaviour
 {
     public float countDownTime;
-    public Text countDownText;
+    public TextMesh countDownText;
 
     void Start()
     {
-        countDownText = countDownText.GetComponent<UnityEngine.UI.Text>();
+        countDownText = countDownText.GetComponent<UnityEngine.TextMesh>();
         StartCoroutine(startCountdown());
     }
 
     IEnumerator startCountdown()
     {
+        GameManager.Instance.EndGame();
         while (countDownTime > 0)
         {
             countDownText.text = countDownTime.ToString();

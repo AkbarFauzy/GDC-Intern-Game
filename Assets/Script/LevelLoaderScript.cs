@@ -5,25 +5,73 @@ using UnityEngine.SceneManagement;
 
 public class LevelLoaderScript : MonoBehaviour
 {
-    public float transitionTime = 1f;
-    public Animator transition;
+    public static LevelLoaderScript Instance { get; private set; }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    public float transitionTime;
+    public Animator transition;
+    private bool showLB;
+
+    private void Awake()
     {
-        if (GameManager.Instance.countFinish == 4) {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
+    {
+        transitionTime = 3f;
+    }
+
+    void LateUpdate()
+    {
+        if (GameManager.Instance.play && SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            GameManager.Instance.play = false;
             LoadNextLevel();
+        }
+        if (showLB && Input.GetKeyDown("space"))
+        {
+            showLB = false;
+            LoadNextLevel();
+        }
+        if (GameManager.Instance.countFinish == 4) {
+            if (SceneManager.GetActiveScene().buildIndex == 2) {
+                showLB = true;
+            }
+            LoadNextLevel();      
         }
     }
 
     public void LoadNextLevel()
     {
+        if (GameManager.Instance.runningStageRound == 0)
+        {
+            GameManager.Instance.resetBuff();
+        }
+
         if (GameManager.Instance.runningStageRound < 2) {
-            StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
-            GameManager.Instance.runningStageRound++;
-        } else if (GameManager.Instance.runningStageRound == 2) {
-            StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
-            GameManager.Instance.runningStageRound++;
+            if (showLB) {
+                StartCoroutine(LoadLevel(5));
+                GameManager.Instance.runningStageRound++;
+            }
+            else {
+                if (SceneManager.GetActiveScene().buildIndex < 3) {
+                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+                }
+                else if (SceneManager.GetActiveScene().buildIndex == 3) {
+                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
+                }
+                else if (SceneManager.GetActiveScene().buildIndex == 5) {
+                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 2));
+                }
+            }
         }
         else {
             GameManager.Instance.runningStageRound = 0;
@@ -35,9 +83,8 @@ public class LevelLoaderScript : MonoBehaviour
     {
         transition.SetTrigger("start");
         GameManager.Instance.countFinish = 0;
-
         yield return new WaitForSeconds(transitionTime);
-
+        transition.SetTrigger("end");
         SceneManager.LoadScene(lvlIndex);
     }
 

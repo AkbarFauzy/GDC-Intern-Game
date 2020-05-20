@@ -20,7 +20,8 @@ public class GameManager : MonoBehaviour
         public float score;
         public float distanceToFinish;
         public string bufftype;
-        public float playerEffect;
+        public float buffValue;
+        public string charName;
         public KeyCode tapKey;
     }
 
@@ -42,6 +43,15 @@ public class GameManager : MonoBehaviour
     public void BeginGame()
     {
         play = true;
+    }
+
+    public void resetBuff() {
+        for (int i=0;i<GameManager.Instance.playerRank.Length;i++)
+        {
+            GameManager.Instance.playerRank[i].bufftype = "";
+            GameManager.Instance.playerRank[i].buffValue = 1;
+        }
+    
     }
 
     public void EndGame() {
