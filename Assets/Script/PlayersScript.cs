@@ -5,12 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class PlayersScript : MonoBehaviour
 {  
-    public float speed;
+    private float speed;
+    public Color playerColor;  
     public KeyCode tapKey;
     public Rigidbody player;
     public Vector3 playerOffset;
     public Animator anim;
     public bool isFinish;
+    public bool isStuned;
+    public bool isTargeted;
     public int playerNumber;
     public string charName;
     private int sceneIndex;
@@ -21,22 +24,32 @@ public class PlayersScript : MonoBehaviour
         anim = GetComponent<Animator>();
         GameManager.Instance.playerRank[playerNumber - 1].tapKey = tapKey;
         GameManager.Instance.playerRank[playerNumber - 1].charName = charName;
+        sceneIndex = SceneManager.GetActiveScene().buildIndex; ;
+        playerColor = GetComponent<SpriteRenderer>().color;
+
+        anim.SetBool("IsBossStage", false);
+        anim.SetBool("IsRunningStage", false);
+
+        if (sceneIndex == 2)
+        {
+            anim.SetBool("IsRunningStage", true);
+        }
+        else if (sceneIndex == 4)
+        {
+            anim.SetBool("IsBossStage", true);
+        }
     }
 
     private void Update()
     {
         if (GameManager.Instance.play == true)
         {
-            sceneIndex = SceneManager.GetActiveScene().buildIndex;
+           
             if (sceneIndex == 2)
             {
-                anim.SetBool("IsRunningStage", true);
                 RunningStage();
             }
-            else if (sceneIndex == 2)
-            {
 
-            }
         }
     }
 
@@ -75,20 +88,17 @@ public class PlayersScript : MonoBehaviour
         }
     }
 
-    void BossStage() { 
-    
-    
-    
-    }
-
-
     void OnTriggerEnter(Collider coll)
     {
-        isFinish = true;
-        GameManager.Instance.playerFinish[GameManager.Instance.countFinish] = playerNumber;
-        GameManager.Instance.countFinish++;
-    }
+        if (coll.gameObject.name == "Finish Line")
+        {
+            isFinish = true;
+            GameManager.Instance.playerFinish[GameManager.Instance.countFinish] = playerNumber;
+            GameManager.Instance.countFinish++;
 
+        }
+
+    }
 
 
 }

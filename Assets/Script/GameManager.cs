@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GameManager : MonoBehaviour
 
     public int runningStageRound;
     public int[] playerFinish = new int[4];
+    public int[] overal = new int[4];
     public int countFinish;
     public bool play;
 
@@ -17,7 +19,7 @@ public class GameManager : MonoBehaviour
         public int playerNumber;
         public int pos;
         public int overallPos;
-        public float score;
+        public int score;
         public float distanceToFinish;
         public string bufftype;
         public float buffValue;
@@ -58,5 +60,39 @@ public class GameManager : MonoBehaviour
         play = false;
     }
 
+    public void ChangePosByScore(int s1, int s2, int s3, int s4)
+    {
+        overal[0] = s1;
+        overal[1] = s2;
+        overal[2] = s3;
+        overal[3] = s4;
+
+        Array.Sort(overal);
+        Array.Reverse(overal);
+        int counterPos = 1;
+        for (int i = 0; i < 4; i++)
+        {
+            int j = 0;
+            while (GameManager.Instance.playerRank[j].score != overal[i])
+            {
+                j++;
+            }
+            GameManager.Instance.playerRank[j].overallPos = counterPos;
+            if (i < 3)
+            {
+                while (j < 3 && i < 3 && overal[i] == overal[i + 1])
+                {
+                    j += 1;
+                    GameManager.Instance.playerRank[j].overallPos = counterPos;
+                    if (i < 3)
+                    {
+                        i++;
+                    }
+                }
+            }
+            counterPos++;
+        }
+
+    }
 
 }

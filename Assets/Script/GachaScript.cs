@@ -61,7 +61,7 @@ public class GachaScript : MonoBehaviour
             {
                 loot[chestIndex].effectType = "damage";
             }
-            loot[chestIndex].effectValue = (float)System.Math.Round(Random.Range(2.0f, 4.0f),2);
+            loot[chestIndex].effectValue = (float)System.Math.Round(Random.Range(1.0f, 2.0f), 2);
         }
         else { //debuff
             if (lootNumber == 1 || lootNumber == 3) {

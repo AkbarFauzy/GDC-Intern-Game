@@ -1,27 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PositionScript : MonoBehaviour
 {
     public Transform finishLine;
     public List<Transform> target;
-    public List<SpriteRenderer> playerBoard;
+    public List<Text> playerScore;
+    public List<Text> playerBoard;
 
     private void Start()
     {
+
         for (int i = 0;i<target.Count;i++) {
             GameManager.Instance.playerRank[i].playerNumber = i+1;
             GameManager.Instance.playerRank[i].pos = 1;
             GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
+            playerScore[i].text = GameManager.Instance.playerRank[i].score.ToString();
         }
 
     }
 
     private void Update()
     {
-        DistanceToFinish();
-        CountPos();
+       if (SceneManager.GetActiveScene().buildIndex == 2) {
+            DistanceToFinish();
+            CountPos();
+       }
+
+        if (SceneManager.GetActiveScene().buildIndex == 4){
+            GameManager.Instance.ChangePosByScore(GameManager.Instance.playerRank[0].score, GameManager.Instance.playerRank[1].score, GameManager.Instance.playerRank[2].score, GameManager.Instance.playerRank[3].score);
+            for (int i = 0; i < target.Count; i++)
+            {
+                ChangePosText(GameManager.Instance.playerRank[i].overallPos, i);
+                playerScore[i].text = GameManager.Instance.playerRank[i].score.ToString();
+            }
+        }
+        
     }
 
     void DistanceToFinish() {
@@ -43,20 +60,21 @@ public class PositionScript : MonoBehaviour
                 j++;
             }
             GameManager.Instance.playerRank[i].pos = pos;
-            ChangePos(pos, i);
+            ChangePosText(pos, i);
         }
     }
 
-    void ChangePos(int pos, int player) {
+    void ChangePosText(int pos, int player) {
         if (pos == 1) {
-            playerBoard[player].color = Color.cyan;
+            playerBoard[player].text = "1";
         } else if(pos == 2){
-            playerBoard[player].color = Color.yellow;
+            playerBoard[player].text = "2";
         } else if(pos == 3){
-            playerBoard[player].color = Color.green;
+            playerBoard[player].text = "3";
         } else if(pos == 4){
-            playerBoard[player].color = Color.blue;
+            playerBoard[player].text = "4";
         }
     }
+
 
 }
