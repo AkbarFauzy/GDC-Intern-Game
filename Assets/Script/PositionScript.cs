@@ -7,17 +7,16 @@ using UnityEngine.UI;
 public class PositionScript : MonoBehaviour
 {
     public Transform finishLine;
-    public List<Transform> target;
+    public List<GameObject> target;
     public List<Text> playerScore;
     public List<Text> playerBoard;
 
     private void Start()
     {
-
         for (int i = 0;i<target.Count;i++) {
             GameManager.Instance.playerRank[i].playerNumber = i+1;
             GameManager.Instance.playerRank[i].pos = 1;
-            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
+            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].GetComponent<Transform>().position.x;
             playerScore[i].text = GameManager.Instance.playerRank[i].score.ToString();
         }
 
@@ -30,7 +29,16 @@ public class PositionScript : MonoBehaviour
             CountPos();
        }
 
-        if (SceneManager.GetActiveScene().buildIndex == 4){
+       /* if (SceneManager.GetActiveScene().buildIndex == 4)
+        {
+            for (int i = 0; i < target.Count; i++)
+            {
+                ChangePosText(GameManager.Instance.playerRank[i].overallPos, i);
+                playerScore[i].text = GameManager.Instance.playerRank[i].score.ToString();
+            }
+        }*/
+
+       if (SceneManager.GetActiveScene().buildIndex == 4){
             GameManager.Instance.ChangePosByScore(GameManager.Instance.playerRank[0].score, GameManager.Instance.playerRank[1].score, GameManager.Instance.playerRank[2].score, GameManager.Instance.playerRank[3].score);
             for (int i = 0; i < target.Count; i++)
             {
@@ -44,7 +52,7 @@ public class PositionScript : MonoBehaviour
     void DistanceToFinish() {
         for (int i = 0; i < target.Count; i++)
         {
-            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].position.x;
+            GameManager.Instance.playerRank[i].distanceToFinish = finishLine.position.x - target[i].GetComponent<Transform>().position.x;
         }
     }
 
@@ -65,7 +73,10 @@ public class PositionScript : MonoBehaviour
     }
 
     void ChangePosText(int pos, int player) {
-        if (pos == 1) {
+        if (target[player].GetComponent<PlayersScript>().Hp <= 0) {
+            playerBoard[player].text = "R.I.P";
+        }
+        else if (pos == 1) {
             playerBoard[player].text = "1";
         } else if(pos == 2){
             playerBoard[player].text = "2";
@@ -75,6 +86,5 @@ public class PositionScript : MonoBehaviour
             playerBoard[player].text = "4";
         }
     }
-
 
 }

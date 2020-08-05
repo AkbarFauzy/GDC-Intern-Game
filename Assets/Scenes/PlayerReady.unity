@@ -591,6 +591,11 @@ PrefabInstance:
       propertyPath: charName
       value: Vega
       objectReference: {fileID: 0}
+    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: 9db1c19dcb0b5d346b6eedd761950192, type: 2}
     - target: {fileID: -4544415783400123344, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
         type: 3}
       propertyPath: m_IsKinematic
@@ -631,11 +636,6 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: 9db1c19dcb0b5d346b6eedd761950192, type: 2}
     m_RemovedComponents:
     - {fileID: 4896909702515833987, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
@@ -814,6 +814,11 @@ PrefabInstance:
       propertyPath: charName
       value: Alhena
       objectReference: {fileID: 0}
+    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: e1e9e0d9649f9d748b927dd6046bdff6, type: 2}
     - target: {fileID: -4544415783400123344, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
         type: 3}
       propertyPath: m_IsKinematic
@@ -849,11 +854,6 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: e1e9e0d9649f9d748b927dd6046bdff6, type: 2}
     m_RemovedComponents:
     - {fileID: 4896909702515833987, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
@@ -1490,6 +1490,11 @@ PrefabInstance:
       propertyPath: charName
       value: Lyra
       objectReference: {fileID: 0}
+    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: f2212f1b64c05d04ead15effbfcbfe51, type: 2}
     - target: {fileID: -4544415783400123344, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
         type: 3}
       propertyPath: m_IsKinematic
@@ -1525,11 +1530,6 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: f2212f1b64c05d04ead15effbfcbfe51, type: 2}
     m_RemovedComponents:
     - {fileID: 4896909702515833987, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
@@ -2048,6 +2048,11 @@ PrefabInstance:
       propertyPath: charName
       value: Orion
       objectReference: {fileID: 0}
+    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: ae1ce8e26787d714aace2dbf0b0eeca4, type: 2}
     - target: {fileID: -4544415783400123344, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
         type: 3}
       propertyPath: m_IsKinematic
@@ -2083,11 +2088,6 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9020224052088320487, guid: 3fcb6fb6c75cab54bada7b4e11343e81,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: ae1ce8e26787d714aace2dbf0b0eeca4, type: 2}
     m_RemovedComponents:
     - {fileID: 4896909702515833987, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3fcb6fb6c75cab54bada7b4e11343e81, type: 3}

@@ -36,7 +36,7 @@ public class LeaderBordScript : MonoBehaviour
     }
 
 
-    IEnumerator CountUpToTarget(Text label, float targetVal, float current,float duration, float delay = 1.0f, string prefix = "")
+    IEnumerator CountUpToTarget(Text label, float targetVal, float current,float duration, float delay = 5.0f, string prefix = "")
     {
         if (delay > 0)
         {

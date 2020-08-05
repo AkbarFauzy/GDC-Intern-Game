@@ -120,12 +120,14 @@ MonoBehaviour:
   tapKey: 97
   player: {fileID: 0}
   playerOffset: {x: 0, y: 0, z: 0}
+  Hp: 20000
+  HpBar: {fileID: 0}
   anim: {fileID: 0}
+  playerNumber: 0
+  charName: 
   isFinish: 0
   isStuned: 0
   isTargeted: 0
-  playerNumber: 0
-  charName: 
 --- !u!54 &-4544415783400123344
 Rigidbody:
   m_ObjectHideFlags: 0

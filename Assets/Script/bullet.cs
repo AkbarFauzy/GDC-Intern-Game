@@ -7,6 +7,7 @@ public class bullet : MonoBehaviour
     public float bulletSpeed = 10f;
     public Rigidbody bulletRb;
     public GameObject target;
+    public GameObject output;
     public int bulletDamage;
     public int bulletID;
     public Color32 bulletColor;
@@ -15,6 +16,7 @@ public class bullet : MonoBehaviour
     private void Start()
     {
         target = GameObject.Find("Boss");
+        output = GameObject.Find("DamageOutput");
         gameObject.GetComponent<SpriteRenderer>().color = bulletColor;
     }
 
@@ -30,7 +32,7 @@ public class bullet : MonoBehaviour
         if (other.gameObject.name == "Boss")
         {
             boss.applyDamage(bulletDamage, bulletID);
-            Instantiate(damagePopUpPrefab, transform.position, Quaternion.identity);
+            Instantiate(damagePopUpPrefab, output.transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }

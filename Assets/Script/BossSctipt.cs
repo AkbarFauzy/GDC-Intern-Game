@@ -4,25 +4,22 @@ using UnityEngine;
 
 public class BossSctipt : MonoBehaviour
 {
-    public int HP= 10000000;
-    public int MaxHP;
+    public int HP = GameManager.bossMaxHealth;
+    public int damage = 100;
     public HealthBarScript HpBar;
     public HealthPercentage HpPercentage;
-    private int attTimerStart = 10;
-    private int attTimerEnd = 20;
-    private int attType;
-    private int chance;
-    private bool isAttacking;
+    private int attTimerStart = 5;
+    private int attTimerEnd = 10;
+
     public List<GameObject> target;
     public List<PlayersScript> target_script;
     public int p1, p2, p3;
-
+    private bool isAttacking;
     // Start is called before the first frame update
     void Start()
     {
-        MaxHP = HP;
-        HpBar.setMaxHealth(MaxHP);
-        HpPercentage.setHealthPercentage(MaxHP, HP);
+        HpBar.setMaxHealth(GameManager.bossMaxHealth);
+        HpPercentage.setHealthPercentage(GameManager.bossMaxHealth, HP);
 
         isAttacking = false;
         for (int i = 0; i < target.Count; i++)
@@ -36,15 +33,16 @@ public class BossSctipt : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (HP < (MaxHP - (MaxHP * 80 / 100))) {
+        if (isBerserk()) {
             gameObject.GetComponent<SpriteRenderer>().color = new Color32(255,0,189,255);
-            attTimerStart = 5;
-            attTimerEnd = 10;
+           // attTimerStart = 5;
+           // attTimerEnd = 10;
         }
 
-        if (HP < 0) {
+        if (HP <= 0) {
             HP = 0;
-            //Change scene
+            GameManager.Instance.countFinish = 4;
+            GameManager.Instance.runningStageRound++;
         }
 
     }
@@ -57,114 +55,114 @@ public class BossSctipt : MonoBehaviour
         return false;
     }
 
-    private int calculateAttTypeChance(int initialChance) {
-        if (initialChance <= 10) // 10% four target
-            return 4;
-        if (initialChance <= 35) // 25% three target
-            return 3;
-        if (initialChance <= 65) // 30% two target
-            return 2;
-        if (initialChance <= 100) // 35% one target
-            return 1;
-        return 0;
+    public bool isBerserk()
+    {
+        return HP < (GameManager.bossMaxHealth - (GameManager.bossMaxHealth * 80 / 100));
+    }
+
+    private int calculateAttDamage(int pNumber) {
+        int initDamage = damage;
+        if (isBerserk())
+        {
+            initDamage *= 2;
+        }
+
+        switch (GameManager.Instance.playerRank[pNumber].overallPos)
+        {
+            case 1:
+                initDamage += ((int)((float)damage * 0.75f));
+                break;
+            case 2:
+                initDamage += ((int)((float)damage * 0.5f));
+                break;
+            case 3:
+                initDamage += ((int)((float)damage * 0.25f));
+                break;
+            default:
+                break;
+        }
+
+        return initDamage;
+    }
+
+    private int calculateStunDuration(int pNumber)
+    {
+        int duration;
+
+        switch (GameManager.Instance.playerRank[pNumber].overallPos)
+        {
+            case 1:
+                duration = 4;
+                break;
+            case 2:
+                duration = 3;
+                break;
+            case 3:
+                duration = 2;
+                break;
+            default:
+                duration = 1;
+                break;
+        }
+
+        return duration;
     }
 
     IEnumerator countToAtt(float attTimerStart, float attTimerEnd) {
+        yield return new WaitForSeconds(Random.Range(attTimerStart, attTimerEnd));
         while (!isDefeted())
         {
+            attAllP();
             yield return new WaitForSeconds(Random.Range(attTimerStart, attTimerEnd));
-
-            chance = Random.Range(0, 101);
-            attType = calculateAttTypeChance(chance);
-            bossAttack(attType);
         }
     }
 
-    public void bossAttack(int attType) {
-        if (attType == 1)
+    private void attAllP()
+    {
+        for (int i = 0; i < target.Count; i++)
         {
-            p1 = Random.Range(0, 4);
-            StartCoroutine(AttAP(p1));
-        } else if (attType == 2) 
-        {
-            p1 = Random.Range(0, 4);
-            p2 = Random.Range(0, 4);
-            while (p1 == p2)
-            {
-                p2 = Random.Range(0, 4);
-            }
-            attTwoP(p1, p2);
-        } else if (attType == 3)
-        {
-            p1 = Random.Range(0, 4);
-            p2 = Random.Range(0, 4);
-            while (p1 == p2)
-            {
-                p2 = Random.Range(0, 4);
-            }
-            p3 = Random.Range(0,4);
-            while (p3 == p1 || p3 == p2) {
-                p3 = Random.Range(0, 4);
-            }
-            attThreeP(p1,p2,p3);
-        }
-        else if (attType == 4)
-        {
-            attAllP();
+            StartCoroutine(AttAP(i));
         }
     }
 
     IEnumerator AttAP(int pNumber) {
         isAttacking = true;
-        for (int i = 0; i<10; i++) {
+        int ran = Random.Range(5, 10);
+        if (!target_script[pNumber].isFinish)
+        {
+            for (int i = 0; i < 10; i++) {
+                target[pNumber].GetComponent<SpriteRenderer>().color = Color.white;
+                yield return new WaitForSeconds(.2f);
+                target[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
+                yield return new WaitForSeconds(.2f);
+            }
+
             target_script[pNumber].GetComponent<SpriteRenderer>().color = Color.white;
-            yield return new WaitForSeconds(.2f);
-            target_script[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
-            yield return new WaitForSeconds(.2f);
+            yield return new WaitForSeconds(0.5f);
+
+            if (target[pNumber].GetComponent<weapon>().isAttacking)
+            {
+                target_script[pNumber].isStuned = true;
+                target[pNumber].GetComponent<SpriteRenderer>().color = Color.grey;
+                target_script[pNumber].Hp -= calculateAttDamage(pNumber);
+                target_script[pNumber].HpBar.setHealth(target_script[pNumber].Hp);
+                yield return new WaitForSeconds(calculateStunDuration(pNumber));
+
+                target[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
+                target_script[pNumber].isStuned = false;
+            }
+
+            target[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
+            isAttacking = false;
         }
-
-        target_script[pNumber].GetComponent<SpriteRenderer>().color = Color.white;
-        yield return new WaitForSeconds(1f);
-
-        if (target[pNumber].GetComponent<weapon>().isAttacking)
-        {
-           target_script[pNumber].isStuned = true;
-            target_script[pNumber].GetComponent<SpriteRenderer>().color = Color.grey;
-            yield return new WaitForSeconds(3);
-            target_script[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
-            target_script[pNumber].isStuned = false;
-        }
-
-        target_script[pNumber].GetComponent<SpriteRenderer>().color = target_script[pNumber].playerColor;
-        target_script[pNumber].isTargeted = false;
-        isAttacking = false;
     }
 
-        private void attTwoP(int pNumberOne, int pNumberTwo)
-    {
-        StartCoroutine(AttAP(pNumberOne));
-        StartCoroutine(AttAP(pNumberTwo));
-    }
-    private void attThreeP(int pNumberOne, int pNumberTwo, int pNumberThree)
-    {
-        StartCoroutine(AttAP(pNumberOne));
-        StartCoroutine(AttAP(pNumberTwo));
-        StartCoroutine(AttAP(pNumberThree));
-    }
-
-    private void attAllP()
-    {
-        for (int i = 0; i < target.Count;i++)
-        {
-            StartCoroutine(AttAP(i));
-        }
-    } 
 
     public void applyDamage(int damageTaken, int player) {
         HP -= damageTaken;
         GameManager.Instance.playerRank[player - 1].score += damageTaken;
         HpBar.setHealth(HP);
-        HpPercentage.setHealthPercentage(MaxHP, HP);
+        HpPercentage.setHealthPercentage(GameManager.bossMaxHealth, HP);
     }
 
     public void startDefeatedAnimtion() { 

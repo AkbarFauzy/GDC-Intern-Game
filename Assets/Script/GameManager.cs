@@ -10,9 +10,13 @@ public class GameManager : MonoBehaviour
     public int runningStageRound;
     public int[] playerFinish = new int[4];
     public int[] overal = new int[4];
+
+    public const int bossMaxHealth = 10000000;
+    public const int playerMaxHealth = 1000;
+
     public int countFinish;
     public bool play;
-
+    
     [System.Serializable]
     public struct rank
     {
@@ -20,6 +24,7 @@ public class GameManager : MonoBehaviour
         public int pos;
         public int overallPos;
         public int score;
+        public int Hp;
         public float distanceToFinish;
         public string bufftype;
         public float buffValue;
@@ -53,7 +58,23 @@ public class GameManager : MonoBehaviour
             GameManager.Instance.playerRank[i].bufftype = "";
             GameManager.Instance.playerRank[i].buffValue = 1;
         }
-    
+    }
+
+    public void resetScore()
+    {
+        for (int i = 0; i < GameManager.Instance.playerRank.Length; i++)
+        {
+            GameManager.Instance.playerRank[i].score = 0;
+        }
+    }
+
+    public void resetHp()
+    {
+        for (int i = 0; i < GameManager.Instance.playerRank.Length; i++)
+        {
+            GameManager.Instance.playerRank[i].Hp = playerMaxHealth;
+        }
+       
     }
 
     public void EndGame() {
@@ -93,6 +114,13 @@ public class GameManager : MonoBehaviour
             counterPos++;
         }
 
+    }
+
+    public void ResetGame()
+    {
+        resetBuff();
+        resetScore();
+        resetHp();
     }
 
 }

@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GachaScript : MonoBehaviour
 {
     public List<SpriteRenderer> light;
     public List<Animator> buffAnimation;
     public List<Animator> chest;
+    public Text txt;
+    public Text keyTxt;
 
     private List<int> noRepeat = new List<int>();
     [System.Serializable]
@@ -34,6 +37,8 @@ public class GachaScript : MonoBehaviour
             loot[i].effect= temRand;
             GenerateChestLoot(temRand, i);
         }
+        //txt.text = GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].charName;
+       // keyTxt.text = "Press " + GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].tapKey.ToString();
     }
 
     private void Update()
@@ -42,6 +47,8 @@ public class GachaScript : MonoBehaviour
         {
             StartCoroutine(PlayRandomLight());
         }
+        txt.text = GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].charName;
+        keyTxt.text = "Press " + GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].tapKey.ToString();
     }
 
     IEnumerator DelayedAnimation()
@@ -54,20 +61,22 @@ public class GachaScript : MonoBehaviour
     {
        if (lootNumber%2 ==0) //buff
         {
-            if (lootNumber == 2) {
-                loot[chestIndex].effectType = "speed";
+
+            switch (lootNumber) {
+                case 2:
+                    loot[chestIndex].effectType = "speed";
+                    break;
+                case 4:
+                    loot[chestIndex].effectType = "damage";
+                    break;
             }
-            else if (lootNumber == 4)
-            {
-                loot[chestIndex].effectType = "damage";
-            }
-            loot[chestIndex].effectValue = (float)System.Math.Round(Random.Range(1.0f, 2.0f), 2);
+            loot[chestIndex].effectValue = (float)System.Math.Round(Random.Range(1.0f, 1.5f), 2);
         }
         else { //debuff
             if (lootNumber == 1 || lootNumber == 3) {
                 loot[chestIndex].effectType = "speed";
             }
-            loot[chestIndex].effectValue = Random.Range(0.2f, 0.7f);
+            loot[chestIndex].effectValue = Random.Range(0.7f, 0.9f);
         }
     }
 
@@ -98,6 +107,8 @@ public class GachaScript : MonoBehaviour
                 GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].buffValue = loot[i].effectValue;
                 GameManager.Instance.countFinish++;
                 repeatable++;
+               // txt.text = GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].charName;
+               // keyTxt.text = "Press " + GameManager.Instance.playerRank[GameManager.Instance.playerFinish[repeatable % 4] - 1].tapKey.ToString();
             }
 
             yield return null;

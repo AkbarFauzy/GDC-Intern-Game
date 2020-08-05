@@ -41,6 +41,7 @@ public class PlayerReadyScript : MonoBehaviour
 
         if (r1 && r2 && r3 && r4) {
             r1 = false;
+            GameManager.Instance.ResetGame();
             GameManager.Instance.BeginGame();
         }
 

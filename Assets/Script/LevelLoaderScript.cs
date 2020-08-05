@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class LevelLoaderScript : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class LevelLoaderScript : MonoBehaviour
 
     public float transitionTime;
     public Animator transition;
+    public GameObject leaderBoardPrefab;
     private bool showLB;
 
     private void Awake()
@@ -41,11 +43,16 @@ public class LevelLoaderScript : MonoBehaviour
             showLB = false;
             LoadNextLevel();
         }
+
         if (GameManager.Instance.countFinish == 4) {
             if (SceneManager.GetActiveScene().buildIndex == 2) {
+                if (showLB == false)
+                {
+                    StartCoroutine(LeaderBoard());
+                }
                 showLB = true;
-            }
-            LoadNextLevel();      
+                
+            }      
         }
     }
 
@@ -56,27 +63,31 @@ public class LevelLoaderScript : MonoBehaviour
             GameManager.Instance.resetBuff();
         }
 
-        if (GameManager.Instance.runningStageRound < 2) {
-            if (showLB) {
-                StartCoroutine(LoadLevel(5));
-                GameManager.Instance.runningStageRound++;
-            }
-            else {
-                if (SceneManager.GetActiveScene().buildIndex < 3) {
-                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
-                }
-                else if (SceneManager.GetActiveScene().buildIndex == 3) {
+        if (GameManager.Instance.runningStageRound < 2)
+        {
+            switch (SceneManager.GetActiveScene().buildIndex) {
+                case 3:
                     StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
-                }
-                else if (SceneManager.GetActiveScene().buildIndex == 5) {
-                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 2));
-                }
+                    break;
+                default:
+                    StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+                    break;
             }
+        }
+        else if (GameManager.Instance.runningStageRound == 2)
+        {
+            StartCoroutine(LoadLevel(4));
         }
         else {
-            GameManager.Instance.runningStageRound = 0;
             StartCoroutine(LoadLevel(0));
         }
+    }
+
+    IEnumerator LeaderBoard()
+    {
+        yield return new WaitForSeconds(2f);
+        leaderBoardPrefab.GetComponent<Canvas>().worldCamera = Camera.main;
+        Instantiate(leaderBoardPrefab, leaderBoardPrefab.transform);
     }
 
     IEnumerator LoadLevel(int lvlIndex) 

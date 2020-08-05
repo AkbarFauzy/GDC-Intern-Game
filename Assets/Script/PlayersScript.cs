@@ -10,13 +10,16 @@ public class PlayersScript : MonoBehaviour
     public KeyCode tapKey;
     public Rigidbody player;
     public Vector3 playerOffset;
+    public HealthBarScript HpBar;
     public Animator anim;
-    public bool isFinish;
-    public bool isStuned;
-    public bool isTargeted;
     public int playerNumber;
     public string charName;
+    public int Hp;
     private int sceneIndex;
+    public bool isFinish;
+    public bool isStuned;
+    public bool isDead;
+    private bool isRunning;
 
     private void Start()
     {
@@ -24,6 +27,8 @@ public class PlayersScript : MonoBehaviour
         anim = GetComponent<Animator>();
         GameManager.Instance.playerRank[playerNumber - 1].tapKey = tapKey;
         GameManager.Instance.playerRank[playerNumber - 1].charName = charName;
+        Hp = 1000; //GameManager.Instance.playerRank[playerNumber - 1].Hp;
+        HpBar.setMaxHealth(Hp);
         sceneIndex = SceneManager.GetActiveScene().buildIndex; ;
         playerColor = GetComponent<SpriteRenderer>().color;
 
@@ -38,9 +43,10 @@ public class PlayersScript : MonoBehaviour
         {
             anim.SetBool("IsBossStage", true);
         }
+
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (GameManager.Instance.play == true)
         {
@@ -50,6 +56,11 @@ public class PlayersScript : MonoBehaviour
                 RunningStage();
             }
 
+            if (Hp <= 0)
+            {
+                playerIsDead();
+                playerIsFinish();
+            }
         }
     }
 
@@ -58,29 +69,33 @@ public class PlayersScript : MonoBehaviour
         {
             if (Input.GetKeyDown(tapKey))
             {
-                speed += 1.5f;
+                speed += .1f;
             }
             else
             {
                 if (speed > 0)
                 {
-                    speed = Mathf.Abs(speed) - .1f;
-                    anim.SetBool("IsRunning", true);
+                    speed -= .01f;
+                    if (!isRunning) {
+                        isRunning = true;
+                        anim.SetBool("IsRunning", isRunning);
+                    }
                 }
                 else {
                     speed = 0;
-                    anim.SetBool("IsRunning", false);
+                    isRunning = false;
+                    anim.SetBool("IsRunning", isRunning);
                 }
             }
-            Vector3 tempVect = new Vector3(1, 0, 0);
-            if (GameManager.Instance.playerRank[playerNumber - 1].bufftype == "speed")
-            {
-                tempVect = tempVect.normalized * speed * GameManager.Instance.playerRank[playerNumber - 1].buffValue * Time.deltaTime;
-            }
-            else {
-                tempVect = tempVect.normalized * speed * Time.deltaTime;
-            }
-            player.MovePosition(transform.position + tempVect);
+            Vector3 tempVect = new Vector3(1f, 0, 0);
+           // if (GameManager.Instance.playerRank[playerNumber - 1].bufftype == "speed")
+           // {
+           //     tempVect = (tempVect.normalized * speed * Time.fixedDeltaTime) * GameManager.Instance.playerRank[playerNumber - 1].buffValue;
+           // }
+           // else {
+
+          //  }
+            player.MovePosition(player.position + tempVect * speed * Time.fixedDeltaTime);
         }
         else
         { 
@@ -88,17 +103,30 @@ public class PlayersScript : MonoBehaviour
         }
     }
 
+    void playerIsFinish()
+    {
+        isFinish = true;
+        GameManager.Instance.playerFinish[GameManager.Instance.countFinish] = playerNumber;
+        GameManager.Instance.countFinish++;
+    }
+
+    public void playerIsDead() {
+        GameManager.Instance.playerRank[playerNumber - 1].score = 0;
+    }
+
+    public bool playerLastStand() {
+        return Hp <= 100;
+    }
+
     void OnTriggerEnter(Collider coll)
     {
         if (coll.gameObject.name == "Finish Line")
         {
-            isFinish = true;
-            GameManager.Instance.playerFinish[GameManager.Instance.countFinish] = playerNumber;
-            GameManager.Instance.countFinish++;
+            playerIsFinish();
+           // Destroy(gameObject);
 
         }
 
     }
-
 
 }

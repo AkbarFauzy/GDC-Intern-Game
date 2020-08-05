@@ -10,7 +10,7 @@ public class CameraMovement : MonoBehaviour
     public float minZoom;
     public float maxZoom;
 
-
+    private Vector3 velocity;
 
     private void Start()
     {
@@ -25,9 +25,7 @@ public class CameraMovement : MonoBehaviour
         Vector3 centerpoint = getCenterPoint();
         Vector3 newPosition = centerpoint + offset;
 
-        newPosition.z = newPosition.z * ((GetDistance()/200F)+1);
-
-        transform.position = newPosition;
+        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref velocity, 0.1f);
 
         Zoom();
 
@@ -35,8 +33,8 @@ public class CameraMovement : MonoBehaviour
 
     void Zoom()
     {
-        float newZoom = Mathf.Lerp(minZoom, maxZoom, GetDistance()/200f);
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView,newZoom, Time.deltaTime);
+        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetDistance()/50f);
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime);
     }
 
     float GetDistance() {
@@ -61,6 +59,9 @@ public class CameraMovement : MonoBehaviour
         return bound.center;
     }
 
+    public void removePlayer(int pNumber)
+    {
 
+    }
 
 }

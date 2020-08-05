@@ -5,7 +5,7 @@ using UnityEngine;
 public class weapon : MonoBehaviour
 {
 
-    private KeyCode playerKey;
+    private PlayersScript player;
     private bool isPlayerStuned;
     public bool isAttacking;
     public bool targetIsDefeated;
@@ -14,40 +14,46 @@ public class weapon : MonoBehaviour
     public GameObject bulletPrefab;
     public GameObject damagePopUpPrefab;
     public GameObject boss;
-    public int damage;
+    public int damage = 10000;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerKey = GetComponent<PlayersScript>().tapKey;
+        player = GetComponent<PlayersScript>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        isPlayerStuned = GetComponent<PlayersScript>().isStuned;
-        targetIsDefeated = boss.GetComponent<BossSctipt>().isDefeted();
-        if (Input.GetKeyDown(playerKey) && !isPlayerStuned && !targetIsDefeated )
-        {  
-            upTime = Time.time;
-            shoot();
-            isAttacking = true;
-        }
-        else {
-            downTime = Time.time;
-        }
-
-        if (downTime - upTime >= 0.5f)
+        if (GameManager.Instance.play == true && !player.isFinish)
         {
-            isAttacking = false;
-            upTime = 0f;
-            downTime = 0f;
-        }
+            isPlayerStuned = player.isStuned;
+            targetIsDefeated = boss.GetComponent<BossSctipt>().isDefeted();
+            if (Input.GetKeyDown(player.tapKey) && !isPlayerStuned && !targetIsDefeated)
+            {
+                upTime = Time.time;
+                shoot();
+                isAttacking = true;
+            }
+            else
+            {
+                downTime = Time.time;
+            }
 
+            if (downTime - upTime >= 0.5f)
+            {
+                isAttacking = false;
+                upTime = 0f;
+                downTime = 0f;
+            }
+        }
     }
 
     public void shoot() {
-        damage = Random.Range(10000, 15000);
+        damage = Random.Range(5000, 6000);
+        if (player.playerLastStand()) { 
+            damage = (int)((float)damage * 1.5f);
+        }
         bulletPrefab.GetComponent<bullet>().bulletDamage = damage;
         bulletPrefab.GetComponent<bullet>().bulletID = GetComponent<PlayersScript>().playerNumber;
         bulletPrefab.GetComponent<bullet>().bulletColor = GetComponent<PlayersScript>().playerColor;
