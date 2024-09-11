@@ -8,7 +8,7 @@ public class HealthPercentage : MonoBehaviour
 {
     public Text txt;
 
-    public void setHealthPercentage(int maxHp, int currentHp)
+    public void SetHealthPercentage(int maxHp, int currentHp)
     {
         int cal = Convert.ToInt32((float)currentHp / (float)maxHp * 100);
 

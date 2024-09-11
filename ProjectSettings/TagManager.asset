@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - finish
+  - player
+  - menu_button
   layers:
   - Default
   - TransparentFX

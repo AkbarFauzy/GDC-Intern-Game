@@ -5,27 +5,39 @@ using UnityEngine;
 
 public class PopUpDamageScript : MonoBehaviour
 {
-    public int damageValue;
-    public Color32 playerColor;
-    private float speedY;
-    private float timer;
+    public int DamageValue { get; private set; }
+    public Color32 PopUpColor { get; private set; }
+    private float _speedY;
+    private float _timer;
+
     private void Start()
     {
         TextMeshPro txt = GetComponent<TextMeshPro>();
-        txt.text = damageValue.ToString();
-        txt.color = playerColor;
-        speedY = 1f;
-        timer = 0.5f;
+        txt.text = DamageValue.ToString();
+        txt.color = PopUpColor;
+        _speedY = 1f;
+        _timer = 0.5f;
     }
 
     private void Update()
     {
-        transform.position += new Vector3(0, speedY, 0) * Time.deltaTime;
-        timer -= Time.deltaTime;
+        transform.position += new Vector3(0, _speedY, 0) * Time.deltaTime;
+        _timer -= Time.deltaTime;
 
-        if (timer <= 0)
+        if (_timer <= 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            _timer = 0.5f;
         }
     }
+
+    public void SetDamageValue(int damage) {
+        DamageValue = damage;  
+    }
+
+    public void SetColor(Color32 color)
+    {
+        PopUpColor = color;
+    }
+
 }

@@ -18,32 +18,35 @@ public class PlayerReadyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A)) {
-            t1.text = "READY!";
-            r1 = true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.F))
+        if (!allready)
         {
-            t2.text = "READY!";
-            r2 = true;
-        }
 
-        if (Input.GetKeyDown(KeyCode.J)) {
-            t3.text = "READY!";
-            r3 = true;
-        }
+            if (Input.GetKeyDown(KeyCode.A)) {
+                t1.text = "READY!";
+                r1 = true;
+            }
 
-        if (Input.GetKeyDown(KeyCode.L)) {
-            t4.text = "READY!";
-            r4 = true;
-        }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                t2.text = "READY!";
+                r2 = true;
+            }
 
-        if (r1 && r2 && r3 && r4) {
-            r1 = false;
-            GameManager.Instance.ResetGame();
-            GameManager.Instance.BeginGame();
-        }
+            if (Input.GetKeyDown(KeyCode.J)) {
+                t3.text = "READY!";
+                r3 = true;
+            }
 
+            if (Input.GetKeyDown(KeyCode.L)) {
+                t4.text = "READY!";
+                r4 = true;
+            }
+
+            if (r1 && r2 && r3 && r4) {
+                allready = true;
+                GameManager.Instance.ResetGame();
+                GameManager.Instance.BeginGame();
+            }
+        }
     }
 }

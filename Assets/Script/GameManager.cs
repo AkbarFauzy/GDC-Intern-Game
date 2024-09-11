@@ -1,38 +1,47 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
-using System;
+using UnityEngine.UI;
+using AYellowpaper.SerializedCollections;
+
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public const int BOSSMAXHEALTH = 10000000;
+    private int stageRound;
 
-    public int runningStageRound;
-    public int[] playerFinish = new int[4];
-    public int[] overal = new int[4];
+    //Dictionary <PlayerNumber, PlayerScore>
+    [SerializedDictionary("Position", "Player Score")]
+    public SerializedDictionary<int, PolePosition> PolePositions;
 
-    public const int bossMaxHealth = 10000000;
-    public const int playerMaxHealth = 1000;
-
+    public bool isPlay;
     public int countFinish;
-    public bool play;
-    
-    [System.Serializable]
-    public struct rank
-    {
-        public int playerNumber;
-        public int pos;
-        public int overallPos;
-        public int score;
-        public int Hp;
-        public float distanceToFinish;
-        public string bufftype;
-        public float buffValue;
-        public string charName;
-        public KeyCode tapKey;
-    }
+    private bool isShowLeaderBoard;
 
-    public rank[] playerRank = new rank[4];
+    public PlayersScript[] PlayerFinish = new PlayersScript[4];
+    public GameObject leaderBoardPrefab;
+
+    public List<Sprite> BuffSprite;
+
+    [Serializable]
+    public struct PolePosition{
+        public int PlayerNumber;
+        public int PlayerPosition;
+        public int PlayerScore;
+        public BuffType BuffType;
+        public float BuffValue;
+
+        public PolePosition(int playerNumber,int position, int playerScore, BuffType buffType = BuffType.None, float buffValue = 0) {
+            PlayerNumber = playerNumber;
+            PlayerPosition = position;
+            PlayerScore = playerScore;
+            BuffType = buffType;
+            BuffValue = buffValue;
+        }
+    }
 
     private void Awake()
     {
@@ -47,80 +56,129 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (isPlay && SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            isPlay = false;
+            stageRound = 0;
+            LoadNextLevel();
+        }
+
+        if (isPlay && SceneManager.GetActiveScene().buildIndex == 5 && Input.GetKeyDown("space"))
+        {
+            isPlay = false;
+            stageRound = 0;
+            StartCoroutine(LevelLoaderScript.Instance.LoadLevel(0));
+        }
+
+        if (isShowLeaderBoard && Input.GetKeyDown("space"))
+        {
+            isShowLeaderBoard = false;
+            LoadNextLevel();
+        }
+        else if (countFinish == 4)
+        {
+            if (SceneManager.GetActiveScene().buildIndex == 2)
+            {
+                if (isShowLeaderBoard == false)
+                {
+                    stageRound += 1;
+                    StartCoroutine(LeaderBoard());
+                }
+                isShowLeaderBoard = true;
+            }
+            else
+            {
+                LoadNextLevel();
+            }
+        }
+    }
+
+    public void LoadNextLevel()
+    {
+        if (stageRound == 0)
+        {
+            ResetGame();
+            StartCoroutine(LevelLoaderScript.Instance.LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+        }
+        if (stageRound < 2)
+        {
+            switch (SceneManager.GetActiveScene().buildIndex)
+            {
+                case 3:
+                    StartCoroutine(LevelLoaderScript.Instance.LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
+                    break;
+                default:
+                    StartCoroutine(LevelLoaderScript.Instance.LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+                    break;
+            }
+        }
+        else if (stageRound == 2)
+        {
+            StartCoroutine(LevelLoaderScript.Instance.LoadLevel(4));
+            stageRound += 1;
+        }
+        else
+        {
+            StartCoroutine(LevelLoaderScript.Instance.LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+        }
+
+        countFinish = 0;
+    }
+
     public void BeginGame()
     {
-        play = true;
+        isPlay = true;
+/*        PlayerFinish = new PlayersScript[4];*/
     }
 
-    public void resetBuff() {
-        for (int i=0;i<GameManager.Instance.playerRank.Length;i++)
-        {
-            GameManager.Instance.playerRank[i].bufftype = "";
-            GameManager.Instance.playerRank[i].buffValue = 1;
-        }
+    public void SavePlayerFinish(PlayersScript player) {
+        PlayerFinish[countFinish] = player;
     }
 
-    public void resetScore()
+    public void SavePlayerScore(PlayersScript player)
     {
-        for (int i = 0; i < GameManager.Instance.playerRank.Length; i++)
-        {
-            GameManager.Instance.playerRank[i].score = 0;
-        }
+        var Player = PolePositions[player.playerNumber];
+        Player.PlayerScore = player.StageScore;
+        Player.PlayerPosition = player.Position;
+        PolePositions[player.playerNumber] = Player;
     }
 
-    public void resetHp()
+    public void SavePlayerBuff(PlayersScript player, BuffType buffType, float buffValue) {
+        var Player = PolePositions[player.playerNumber];
+        Player.BuffType = buffType;
+        Player.BuffValue = buffValue;
+        PolePositions[player.playerNumber] = Player;
+        player.PlayerCard.SetEffectImage(buffType);
+    }
+
+    public void ResetScore()
     {
-        for (int i = 0; i < GameManager.Instance.playerRank.Length; i++)
-        {
-            GameManager.Instance.playerRank[i].Hp = playerMaxHealth;
-        }
-       
+        PolePositions = new SerializedDictionary<int, PolePosition> {
+            { 1, new PolePosition(1, 4 ,0) },
+            { 2, new PolePosition(2, 4 ,0) },
+            { 3, new PolePosition(3, 4,0) },
+            { 4, new PolePosition(4, 4,0) },
+        };
     }
 
     public void EndGame() {
-        play = false;
-    }
-
-    public void ChangePosByScore(int s1, int s2, int s3, int s4)
-    {
-        overal[0] = s1;
-        overal[1] = s2;
-        overal[2] = s3;
-        overal[3] = s4;
-
-        Array.Sort(overal);
-        Array.Reverse(overal);
-        int counterPos = 1;
-        for (int i = 0; i < 4; i++)
-        {
-            int j = 0;
-            while (GameManager.Instance.playerRank[j].score != overal[i])
-            {
-                j++;
-            }
-            GameManager.Instance.playerRank[j].overallPos = counterPos;
-            if (i < 3)
-            {
-                while (j < 3 && i < 3 && overal[i] == overal[i + 1])
-                {
-                    j += 1;
-                    GameManager.Instance.playerRank[j].overallPos = counterPos;
-                    if (i < 3)
-                    {
-                        i++;
-                    }
-                }
-            }
-            counterPos++;
-        }
-
+        isPlay = false;
     }
 
     public void ResetGame()
     {
-        resetBuff();
-        resetScore();
-        resetHp();
+        stageRound = 0;
+/*        resetBuff();*/
+        ResetScore();
+       /* resetHp();*/
     }
 
+    IEnumerator LeaderBoard()
+    {
+        yield return new WaitForSeconds(2f);
+        GameObject Lb = Instantiate(leaderBoardPrefab, transform.position, Quaternion.identity) as GameObject;
+        Lb.GetComponent<Canvas>().worldCamera = Camera.main;
+    }
 }

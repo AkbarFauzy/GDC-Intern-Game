@@ -5,12 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class BoardScript : MonoBehaviour
 {
-    public Camera cam;
-    public Vector3 offset;
-    
-    void LateUpdate()
-    {
-        transform.position = cam.transform.position + offset;
-    }
+    public static BoardScript Instance;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
 }

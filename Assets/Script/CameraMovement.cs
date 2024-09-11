@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    protected List<IStageObserver> _observers = new List<IStageObserver>();
+
     public List<Transform> target;
     public Camera cam;
     public Vector3 offset;
@@ -21,7 +23,12 @@ public class CameraMovement : MonoBehaviour
     {
         if (target.Count == 0)
             return;
-        
+
+/*        if (GameManager.Instance.countFinish == 4) {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 60f, Time.deltaTime);
+            enabled = false;
+        }*/
+
         Vector3 centerpoint = getCenterPoint();
         Vector3 newPosition = centerpoint + offset;
 
@@ -33,35 +40,58 @@ public class CameraMovement : MonoBehaviour
 
     void Zoom()
     {
-        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetDistance()/50f);
+        float newZoom = Mathf.Lerp(maxZoom, minZoom, GetDistance()/10f);
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, newZoom, Time.deltaTime);
     }
 
     float GetDistance() {
-        var bound = new Bounds(target[0].position, Vector3.zero);
+        int firstChild = 0;
+        while (firstChild != 4 && target[firstChild] == null) {
+            firstChild += 1;
+        }
+        if (firstChild == 4)
+        {
+            return 0f;
+        }
+        var bound = new Bounds(target[firstChild].position, Vector3.zero);
         for (int i = 0; i<target.Count;i++) {
-            bound.Encapsulate(target[i].position);
+            if (target[i] !=null)
+            {
+                bound.Encapsulate(target[i].position);
+            }
+           
         }
 
         return bound.size.x;
     }
 
     Vector3 getCenterPoint() {
+        int firstChild = 0;
+        if (target.Count == 0)
+            return Vector3.zero;
+
+        while ( firstChild != 4 && target[firstChild] == null)
+        {
+            firstChild += 1;
+        }
+
+        if (firstChild == 4)
+        {
+            return Vector3.zero;
+        }
+
+        var bound = new Bounds(target[firstChild].position, Vector3.zero);
+
         if (target.Count == 1)
-            return target[0].position;
-        
-        var bound = new Bounds(target[0].position, Vector3.zero);
+            return target[firstChild].position;
         for (int i = 0; i < target.Count; i++)
         {
-           bound.Encapsulate(target[i].position);
+            if (target[i] != null){ 
+                bound.Encapsulate(target[i].position);
+            }
         }
 
         return bound.center;
-    }
-
-    public void removePlayer(int pNumber)
-    {
-
     }
 
 }

@@ -1,65 +1,85 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class weapon : MonoBehaviour
 {
 
-    private PlayersScript player;
-    private bool isPlayerStuned;
-    public bool isAttacking;
-    public bool targetIsDefeated;
-    public float upTime, downTime;
+    private PlayersScript _player;
     public Transform firePoint;
-    public GameObject bulletPrefab;
-    public GameObject damagePopUpPrefab;
-    public GameObject boss;
-    public int damage = 10000;
+    [SerializeField] private Bullet _bulletPrefab;
+    private int _damage = 10000;
 
-    // Start is called before the first frame update
+    private IObjectPool<Bullet> _bulletPool;
+
+    private bool _collectionCheck = false;
+    private int _defaultCapacity = 20;
+    private int _maxSize = 50;
+
+    private void Awake()
+    {
+        _bulletPool = new ObjectPool<Bullet>(CreateBullet, OnGetFromPool, OnReleaseToPool, OnDestroyPoolBullet, 
+            _collectionCheck, _defaultCapacity, _maxSize); 
+    }
+
     void Start()
     {
-        player = GetComponent<PlayersScript>();
+        _player = GetComponent<PlayersScript>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (GameManager.Instance.play == true && !player.isFinish)
+        if (GameManager.Instance.isPlay == true && !_player.IsFinish)
         {
-            isPlayerStuned = player.isStuned;
-            targetIsDefeated = boss.GetComponent<BossSctipt>().isDefeted();
-            if (Input.GetKeyDown(player.tapKey) && !isPlayerStuned && !targetIsDefeated)
+            if (Input.GetKeyDown(_player.tapKey) && !_player.IsStuned)
             {
-                upTime = Time.time;
-                shoot();
-                isAttacking = true;
-            }
-            else
-            {
-                downTime = Time.time;
-            }
-
-            if (downTime - upTime >= 0.5f)
-            {
-                isAttacking = false;
-                upTime = 0f;
-                downTime = 0f;
+                Shoot();
             }
         }
     }
 
-    public void shoot() {
-        damage = Random.Range(5000, 6000);
-        if (player.playerLastStand()) { 
-            damage = (int)((float)damage * 1.5f);
+    public void Shoot() {
+        Bullet bulletObject = _bulletPool.Get();
+        bulletObject.gameObject.transform.position = firePoint.position;
+        if (bulletObject == null)
+            return;
+
+        _damage = Random.Range(5000, 6001);
+        /* if (_player.buffHolder.GetBuffType() == BuffType.BuffDamage || _player.buffHolder.GetBuffType() == BuffType.DebuffDamage)
+         {
+             damage = (int)(System.Math.Round((float)damage * _player.buffHolder.GetBuffValue()));
+         }*/
+        if (_player.PlayerLastStand())
+        {
+            _damage = (int)((float)_damage * 1.5f);
         }
-        bulletPrefab.GetComponent<bullet>().bulletDamage = damage;
-        bulletPrefab.GetComponent<bullet>().bulletID = GetComponent<PlayersScript>().playerNumber;
-        bulletPrefab.GetComponent<bullet>().bulletColor = GetComponent<PlayersScript>().playerColor;
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        damagePopUpPrefab.GetComponent<PopUpDamageScript>().playerColor = GetComponent<PlayersScript>().playerColor;
-        damagePopUpPrefab.GetComponent<PopUpDamageScript>().damageValue = damage;
+        bulletObject.BulletDamage = _damage;
+    }
+
+
+    private void OnDestroyPoolBullet(Bullet bullet)
+    {
+        Destroy(bullet.gameObject);
+    }
+
+    private void OnReleaseToPool(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(false);
+    }
+
+    private void OnGetFromPool(Bullet bullet)
+    {
+        bullet.gameObject.SetActive(true);
+    }
+
+    private Bullet CreateBullet()
+    {
+        Bullet bulletInstance = Instantiate(_bulletPrefab);
+        bulletInstance.BulletPool = _bulletPool;
+        bulletInstance.SetPlayerScript(_player);
+        bulletInstance.SetBulletColor(_player.playerColor);
+        return bulletInstance;
     }
 
 }

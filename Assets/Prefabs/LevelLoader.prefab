@@ -191,7 +191,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitionTime: 1
-  transition: {fileID: 0}
+  transition: {fileID: 4956367158133384626}
+  leaderBoardPrefab: {fileID: 0}
 --- !u!1 &8006335936625070194
 GameObject:
   m_ObjectHideFlags: 0
