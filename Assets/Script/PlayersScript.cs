@@ -10,7 +10,11 @@ public class PlayersScript : MonoBehaviour
     protected List<IStageObserver> _observers = new List<IStageObserver>();
 
     public int playerNumber;
+
+    float baseSpeed = 0f;
+    float maxSpeed = 5.0f;
     private float speed;
+
     public Color playerColor;  
     public KeyCode tapKey;
     public BuffHolder BuffHolder;
@@ -73,11 +77,6 @@ public class PlayersScript : MonoBehaviour
     {
         if (GameManager.Instance.isPlay == true)
         {
-            if (sceneIndex == 2)
-            {
-                RunningStage();
-            }
-
             if (IsDead)
             {
                 if (BuffHolder.GetBuffType() == BuffType.Life && BuffHolder.GetBuffValue() == 1f)
@@ -96,9 +95,18 @@ public class PlayersScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (sceneIndex == 4) { 
-            UpdatePosition();
-            PlayerCard.SetPositionText(Position.ToString());    
+        if (GameManager.Instance.isPlay == true)
+        {
+            if (sceneIndex == 2)
+            {
+                RunningStage();
+            }
+
+            if (sceneIndex == 4)
+            {
+                UpdatePosition();
+                PlayerCard.SetPositionText(Position.ToString());
+            }
         }
     }
 
@@ -110,36 +118,37 @@ public class PlayersScript : MonoBehaviour
             PlayerCard.SetScoreText(StageScore.ToString());
 
             if (Input.GetKeyDown(tapKey))
-            { 
+            {
+                speed += 0.1f;
+
                 if (BuffHolder.GetBuffType() == BuffType.BuffSpeed)
                 {
-                    speed += .2f * BuffHolder.GetBuffValue();
+                    speed *= BuffHolder.GetBuffValue(); 
                 }
-                else
+
+                speed = Mathf.Min(speed, maxSpeed);
+
+                if (!isRunning)
                 {
-                    speed += .2f;
+                    isRunning = true;
+                    anim.SetBool("IsRunning", isRunning);
                 }
             }
             else
             {
-                if (speed > 0)
+                float slowdown = (BuffHolder.GetBuffType() == BuffType.BuffSpeed && BuffHolder.GetBuffValue() > 1f) ? 0.055f : 0.05f;
+                speed = Mathf.Max(speed - slowdown * Time.fixedDeltaTime / (1.0f / 7.0f), baseSpeed); 
+
+                if (speed <= baseSpeed)
                 {
-                    if (BuffHolder.GetBuffType() == BuffType.BuffSpeed && BuffHolder.GetBuffValue() > 1f)
-                        speed -= .023f;
-                    else
-                        speed -= .02f;
-                    if (!isRunning) {
-                        isRunning = true;
+                    if (isRunning)
+                    {
+                        isRunning = false;
                         anim.SetBool("IsRunning", isRunning);
                     }
                 }
-                else {
-                    speed = 0;
-                    isRunning = false;
-                    anim.SetBool("IsRunning", isRunning);
-                }
             }
-            speed = (float)Math.Round(speed, 2);
+
             Vector3 tempVect = new Vector3(1f, 0, 0);
             player.MovePosition(player.position + tempVect * speed * Time.fixedDeltaTime);
         }
