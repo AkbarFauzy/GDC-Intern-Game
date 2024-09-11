@@ -14,8 +14,6 @@ public class RunningStageManager : MonoBehaviour, IStageObserver
 
     private void Awake()
     {
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 30;
         _stageEventHandlers = new Dictionary<StageEvents, System.Action>()
         {
             {StageEvents.Completed, OnStageCompleted},
